@@ -1,0 +1,18 @@
+[build]
+command = "npm run build"
+publish = ".next"
+node_version = "20"
+
+
+[[plugins]]
+package = "@netlify/plugin-nextjs"
+
+
+[dev]
+framework = "next"
+
+
+[[redirects]]
+from = "/api/*"
+to = "/.netlify/functions/next"
+status = 200
