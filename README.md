@@ -1,23 +1,30 @@
 # LilSupport (MVP)
 
-Next.js + Supabase + Stripe (Checkout + Connect Express) deployed on Netlify.
+Next.js (TS) + Supabase + Stripe (Checkout + Connect Express) deployed on Netlify.
 
-## Setup
-1) Create a Supabase project.
-   - Add storage buckets: `avatars` (public), `qrs` (public).
-   - Run SQL from `supabase/migrations/0001_init.sql`.
-   - Enable Google OAuth (optional).
-2) In Stripe Dashboard:
-   - Create a Product "LilSupport Monthly" with a $4/month Price. Put its Price ID into `STRIPE_PRICE_MONTHLY`.
-   - Add a webhook endpoint pointing to `/.netlify/functions/stripe-webhook` for events: `checkout.session.completed`, `invoice.paid`, `customer.subscription.deleted`.
-   - Enable Connect Express.
-3) Environment variables
-   - Copy `.env.example` to `.env.local` for local dev. Add same keys in Netlify.
-4) Dev
-   - `npm i`
-   - `netlify dev` (or `npm run dev` then `stripe listen --forward-to localhost:8888/.netlify/functions/stripe-webhook`)
-5) Deploy
-   - Push to GitHub. Connect repo to Netlify. It will build via `@netlify/plugin-nextjs`.
+## Quickstart
 
-## Notes
-- The MVP stores payments via webhook using the Supabase Service Role key.
+1. Create Supabase project. Add tables with `db/schema.sql`. Create two Storage buckets:
+   - `avatars` (public)
+   - `qrcodes` (public)
+2. Create a Stripe account. Add a $4/month product/price and set `STRIPE_PRICE_ID_MONTHLY` in `.env`.
+3. Copy `.env.example` → `.env.local` and fill values.
+4. `npm i` then `npm run dev`.
+
+## Routes
+- `/` Landing
+- `/u/[username]` Public profile
+- `/dashboard` Recipient dashboard
+- `/profile/edit` Edit profile
+- `/wallet` Supporter wallet
+
+## Webhooks
+Configure a Stripe webhook endpoint to `https://YOUR_SITE/api/stripe/webhook` with events:
+- `checkout.session.completed`
+- `invoice.paid`
+- `customer.subscription.deleted`
+
+## Netlify
+- Connect GitHub repository, enable builds.
+- Set env vars in Netlify dashboard.
+- The `@netlify/plugin-nextjs` handles API routes as serverless functions.

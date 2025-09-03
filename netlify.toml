@@ -1,27 +1,7 @@
 [build]
   command = "npm run build"
   publish = ".next"
-  environment = { NEXT_TELEMETRY_DISABLED = "1" }
+  functions = "netlify/functions"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
-
-# Stripe webhook as a dedicated Netlify Function
-[[functions]]
-  name = "stripe-webhook"
-  path = "netlify/functions/stripe-webhook.ts"
-  node_bundler = "esbuild"
-  external_node_modules = ["stripe"]
-
-[functions]
-  included_files = ["**/*.mjs", "**/*.cjs", "**/*.js", "**/*.ts"]
-  node_bundler = "esbuild"
-
-[template.environment]
-  NEXT_PUBLIC_SUPABASE_URL = ""
-  NEXT_PUBLIC_SUPABASE_ANON_KEY = ""
-  SUPABASE_SERVICE_ROLE_KEY = ""
-  STRIPE_SECRET_KEY = ""
-  STRIPE_WEBHOOK_SECRET = ""
-  STRIPE_PRICE_MONTHLY = ""
-  APP_URL = ""

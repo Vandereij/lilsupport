@@ -1,8 +1,14 @@
-'use client';
-import { createBrowserClient } from '@supabase/ssr';
+import { createClient } from '@supabase/supabase-js'
 
-export const createClient = () =>
-  createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+export const supabaseBrowser = () => {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL as string
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
+  return createClient(url, anon)
+}
+
+// Server-side client with service role (do NOT bundle to client)
+export const supabaseServer = () => {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL as string
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string
+  return createClient(url, serviceKey, { auth: { persistSession: false } })
+}
