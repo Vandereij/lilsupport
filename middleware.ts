@@ -1,21 +1,14 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-import { createServerClient } from '@supabase/ssr'
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
+export const config = { matcher: ['/dashboard', '/profile/edit', '/wallet'] };
 
 export async function middleware(req: NextRequest) {
-    const res = NextResponse.next()
-    const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        { cookies: { get: (name) => req.cookies.get(name)?.value } }
-    )
-    const { data: { user } } = await supabase.auth.getUser()
-    if (user) {
-        res.headers.set('x-supabase-user-id', user.id)
-    }
-    return res
+  const hasSupabase = req.cookies.get('sb-access-token');
+  if (!hasSupabase) {
+    const url = new URL('/(auth)/sign-in', req.url);
+    url.searchParams.set('redirect', req.nextUrl.pathname);
+    return NextResponse.redirect(url);
+  }
+  return NextResponse.next();
 }
-
-
-export const config = { matcher: ['/((?!_next/|.*\\.\n).*)'] }

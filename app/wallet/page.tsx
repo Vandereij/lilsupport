@@ -1,22 +1,22 @@
-import { createServerClient } from '@/lib/supabaseRsc'
-
+import { createServerSupabase } from '@/lib/supabaseServer';
 
 export default async function Wallet() {
-    const supabase = createServerClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return <div>Please log in.</div>
-    const { data: rows } = await supabase.from('payments_view').select('*').eq('supporter_id', user.id).order('created_at', { ascending: false })
-    return (
-        <div className="grid gap-4">
-            <h1 className="text-2xl font-semibold">My wallet</h1>
-            <ul className="grid gap-2">
-                {rows?.map(r => (
-                    <li key={r.id} className="p-3 rounded-xl border flex justify-between">
-                        <span>@{r.recipient_username}</span>
-                        <span>{r.type} • ${(r.amount / 100).toFixed(2)} • {new Date(r.created_at).toLocaleDateString()}</span>
-                    </li>
-                ))}
-            </ul>
-        </div>
-    )
+  const supabase = createServerSupabase();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+  const { data: payments } = await supabase.from('payments').select('*').eq('supporter_id', user.id).order('created_at', { ascending: false });
+
+  return (
+    <section className="p-6 grid gap-4">
+      <h1 className="text-2xl font-semibold">Wallet</h1>
+      <ul className="divide-y">
+        {(payments || []).map(p => (
+          <li key={p.id} className="py-2 text-sm flex justify-between">
+            <span>{p.type} ${(p.amount/100).toFixed(2)}</span>
+            <span className="text-gray-600">{new Date(p.created_at).toLocaleDateString()}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
 }

@@ -1,52 +1,47 @@
-import Link from 'next/link'
-import { createServerClient } from '@/lib/supabaseRsc'
-import { OnboardButton } from '@/components/OnboardButton'
-
+import { createServerSupabase } from '@/lib/supabaseServer';
+import Link from 'next/link';
 
 export default async function Dashboard() {
-    const supabase = createServerClient()
-    const {
-        data: { user }
-    } = await supabase.auth.getUser()
-    if (!user) return (<div>Please <Link href="/auth/login">log in</Link>.</div>)
+  const supabase = createServerSupabase();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
 
+  const [{ data: prof }, { data: tx }] = await Promise.all([
+    supabase.from('profiles').select('*').eq('id', user.id).maybeSingle(),
+    supabase.from('payments').select('*').eq('recipient_id', user.id).order('created_at', { ascending: false })
+  ]);
 
-    const [{ data: profile }, { data: payments }] = await Promise.all([
-        supabase.from('profiles').select('*').eq('id', user.id).single(),
-        supabase.from('payments_view').select('*').eq('recipient_id', user.id).order('created_at', { ascending: false })
-    ])
+  return (
+    <section className="grid gap-6 p-6">
+      <h1 className="text-2xl font-bold">Dashboard</h1>
 
+      {!prof?.username && (
+        <form className="grid gap-2" action="/profile/edit">
+          <p className="text-sm">Finish your profile to start receiving support.</p>
+          <button className="px-3 py-2 bg-black text-white rounded">Complete profile</button>
+        </form>
+      )}
 
-    const total = payments?.reduce((sum, p) => sum + (p.amount || 0), 0) ?? 0
+      <div className="flex gap-3">
+        <form action="/api/create-onboarding-link" method="POST">
+          <button className="px-3 py-2 border rounded">Set up payouts</button>
+        </form>
+        {prof?.username && (
+          <Link href={`/u/${prof.username}`} className="px-3 py-2 border rounded">View public profile</Link>
+        )}
+      </div>
 
-
-    return (
-        <div className="grid gap-6">
-            <h1 className="text-2xl font-semibold">Dashboard</h1>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-4 rounded-2xl border"><div className="text-sm">Total earnings</div><div className="text-3xl font-bold">${(total / 100).toFixed(2)}</div></div>
-                <div className="p-4 rounded-2xl border"><div className="text-sm">Stripe</div><OnboardButton stripeAccountId={profile?.stripe_account_id} /></div>
-                <div className="p-4 rounded-2xl border"><div className="text-sm">Public URL</div><a className="text-blue-600 underline" href={`/u/${profile?.username}`}>/u/{profile?.username}</a></div>
-            </div>
-            <div>
-                <h2 className="text-xl font-semibold mb-3">Supporters</h2>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                        <thead><tr className="text-left"><th className="py-2">Date</th><th>Supporter</th><th>Type</th><th>Amount</th><th>Status</th></tr></thead>
-                        <tbody>
-                            {payments?.map(p => (
-                                <tr key={p.id} className="border-t">
-                                    <td className="py-2">{new Date(p.created_at).toLocaleString()}</td>
-                                    <td>{p.supporter_email ?? '—'}</td>
-                                    <td>{p.type}</td>
-                                    <td>${(p.amount / 100).toFixed(2)}</td>
-                                    <td>{p.status}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    )
+      <div>
+        <h2 className="font-semibold mb-2">Recent payments</h2>
+        <ul className="divide-y">
+          {(tx || []).map((p) => (
+            <li key={p.id} className="py-2 text-sm flex justify-between">
+              <span>{p.type} — ${(p.amount/100).toFixed(2)}</span>
+              <span className={p.status === 'succeeded' ? 'text-green-600' : p.status === 'failed' ? 'text-red-600' : 'text-gray-500'}>{p.status}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
 }
