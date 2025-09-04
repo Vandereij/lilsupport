@@ -19,6 +19,7 @@ dist/
 
 # Supabase
 .supabase/
+db/
 
 # Env files
 .env
