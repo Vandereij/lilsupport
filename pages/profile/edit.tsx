@@ -93,7 +93,6 @@ export default function EditProfile() {
           </div>
           <div className="card">
             <label>Avatar</label>
-            <label>Avatar</label>
             <input
               type="file"
               accept="image/*"
