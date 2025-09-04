@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+body {
+  @apply bg-gray-50 text-gray-800 font-sans;
+}
+
+a {
+  @apply text-blue-600 hover:underline;
+}
+
+/* globals.css or Tailwind extended classes */
+.btn {
+  @apply px-5 py-2 rounded-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 shadow transition transform hover:scale-105;
+}
+
+.btn-secondary {
+  @apply px-4 py-2 rounded-lg font-medium text-gray-800 bg-gray-100 hover:bg-gray-200 transition transform hover:scale-105;
+}
+
+.card {
+  @apply bg-white rounded-xl shadow p-6 transition transform hover:shadow-lg;
+}

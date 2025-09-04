@@ -14,13 +14,16 @@ export default function Dashboard() {
       setUser(data.user)
       const { data: p } = await s.from('profiles').select('*').eq('id', data.user.id).single()
       setProfile(p)
-      const { data: pays } = await s.from('payments').select('*').eq('recipient_id', data.user.id).order('created_at', { ascending:false })
+      const { data: pays } = await s.from('payments')
+        .select('*')
+        .eq('recipient_id', data.user.id)
+        .order('created_at', { ascending: false })
       setPayments(pays || [])
     })
   }, [])
 
   const setupPayouts = async () => {
-    const res = await fetch('/api/stripe/connect', { method:'POST' })
+    const res = await fetch('/api/stripe/connect', { method: 'POST' })
     const { url } = await res.json()
     window.location.href = url
   }
@@ -28,32 +31,52 @@ export default function Dashboard() {
   return (
     <>
       <Nav />
-      <main className="container">
-        <h1>Dashboard</h1>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-8">
+        <h1 className="text-3xl font-bold">Dashboard</h1>
+
+        {/* Profile Card */}
         {profile && (
-          <div className="card">
-            <p><b>Username:</b> @{profile.username}</p>
-            <p><b>Stripe:</b> {profile.stripe_account_id ? 'Connected' : 'Not connected'}</p>
-            <button className="btn" onClick={setupPayouts}>{profile.stripe_account_id ? 'Edit Stripe payout settings' : 'Set up payouts'}</button>
+          <div className="card space-y-4">
+            <p>
+              <span className="font-semibold">Username:</span> @{profile.username}
+            </p>
+            <p>
+              <span className="font-semibold">Stripe:</span> {profile.stripe_account_id ? 'Connected' : 'Not connected'}
+            </p>
+            <button className="btn" onClick={setupPayouts}>
+              {profile.stripe_account_id ? 'Edit Stripe payout settings' : 'Set up payouts'}
+            </button>
           </div>
         )}
 
-        <div className="card" style={{marginTop:16}}>
-          <h3>Earnings</h3>
-          {payments.length === 0 ? <p>No payments yet.</p> : (
-            <table style={{width:'100%'}}>
-              <thead><tr><th align="left">Type</th><th align="left">Amount</th><th align="left">Status</th><th align="left">Date</th></tr></thead>
-              <tbody>
-                {payments.map(p => (
-                  <tr key={p.id}>
-                    <td>{p.type}</td>
-                    <td>${(p.amount/100).toFixed(2)}</td>
-                    <td>{p.status}</td>
-                    <td>{new Date(p.created_at).toLocaleString()}</td>
+        {/* Earnings Card */}
+        <div className="card space-y-4">
+          <h3 className="text-xl font-semibold">Earnings</h3>
+          {payments.length === 0 ? (
+            <p className="text-gray-600">No payments yet.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-2 text-left text-gray-600 font-medium">Type</th>
+                    <th className="px-4 py-2 text-left text-gray-600 font-medium">Amount</th>
+                    <th className="px-4 py-2 text-left text-gray-600 font-medium">Status</th>
+                    <th className="px-4 py-2 text-left text-gray-600 font-medium">Date</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {payments.map(p => (
+                    <tr key={p.id}>
+                      <td className="px-4 py-2">{p.type}</td>
+                      <td className="px-4 py-2">${(p.amount / 100).toFixed(2)}</td>
+                      <td className="px-4 py-2 capitalize">{p.status}</td>
+                      <td className="px-4 py-2">{new Date(p.created_at).toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </main>
