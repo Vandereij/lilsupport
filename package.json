@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@next/font": "^14.2.15",
     "@supabase/supabase-js": "2.57.0",
     "cross-fetch": "4.0.0",
     "nanoid": "5.1.5",

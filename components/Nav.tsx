@@ -55,7 +55,7 @@ export default function Nav() {
             </>
           ) : (
             <Link
-              href="/#auth"
+              href="/signin"
               className="px-4 py-2 rounded-full bg-brand-dark text-white font-medium hover:bg-brand transition"
             >
               Sign in

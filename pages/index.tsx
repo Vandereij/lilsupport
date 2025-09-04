@@ -1,7 +1,6 @@
 import Head from 'next/head'
 import Nav from '@/components/Nav'
 import { useState } from 'react'
-import { signInWithGoogle, signInWithEmail } from '@/lib/auth'
 
 export default function Home() {
   const [email, setEmail] = useState('')
@@ -23,38 +22,6 @@ export default function Home() {
             <p className="text-gray-700 text-lg bg-white p-6 rounded-xl shadow">
               LilSupport lets fans send a one‑time tip or $4/mo subscription. Creators get paid via Stripe Connect.
             </p>
-
-            <div className="space-y-4">
-              <button
-                className="btn w-full md:w-auto"
-                onClick={() => signInWithGoogle()}
-              >
-                Continue with Google
-              </button>
-
-              <div className="bg-white p-6 rounded-xl shadow space-y-2">
-                <p className="text-gray-600 font-medium">Or get a magic link:</p>
-                <div className="grid grid-cols-[1fr_auto] gap-2">
-                  <input
-                    className="input w-full"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@example.com"
-                  />
-                  <button
-                    className="btn-secondary px-4"
-                    onClick={async () => {
-                      setStatus('Sending…')
-                      await signInWithEmail(email)
-                      setStatus('Check your email!')
-                    }}
-                  >
-                    Send
-                  </button>
-                </div>
-                {status && <small className="text-gray-500">{status}</small>}
-              </div>
-            </div>
           </div>
 
           {/* Right Column: How it works */}

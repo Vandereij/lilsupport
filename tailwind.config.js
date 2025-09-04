@@ -7,6 +7,10 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['var(--font-inter)', 'sans-serif'],   // body
+        heading: ['var(--font-lora)', 'serif'], // headings
+      },
       colors: {
         brand: {
           light: '#CBDCEB',
