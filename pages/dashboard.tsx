@@ -10,11 +10,17 @@ export default function Dashboard() {
   useEffect(() => {
     const s = supabaseBrowser()
     s.auth.getUser().then(async ({ data }) => {
-      if (!data.user) { window.location.href = '/'; return }
+      if (!data.user) {
+        window.location.href = '/'
+        return
+      }
       setUser(data.user)
+
       const { data: p } = await s.from('profiles').select('*').eq('id', data.user.id).single()
       setProfile(p)
-      const { data: pays } = await s.from('payments')
+
+      const { data: pays } = await s
+        .from('payments')
         .select('*')
         .eq('recipient_id', data.user.id)
         .order('created_at', { ascending: false })
@@ -31,54 +37,63 @@ export default function Dashboard() {
   return (
     <>
       <Nav />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-8">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
+      <main className="max-w-6xl mx-auto px-6 py-10 space-y-10">
+        <h1 className="text-3xl font-bold text-brand-dark">Dashboard</h1>
 
-        {/* Profile Card */}
+        {/* Profile / Payout settings */}
         {profile && (
-          <div className="card space-y-4">
-            <p>
-              <span className="font-semibold">Username:</span> @{profile.username}
-            </p>
-            <p>
-              <span className="font-semibold">Stripe:</span> {profile.stripe_account_id ? 'Connected' : 'Not connected'}
-            </p>
-            <button className="btn" onClick={setupPayouts}>
+          <section className="pb-10 rounded-xl border-brand/30 shadow-sm">
+            <h2 className="text-xl font-semibold mb-4">Account</h2>
+            <div className="space-y-2 text-brand-dark/80">
+              <p>
+                <span className="font-medium">Username:</span> @{profile.username}
+              </p>
+              <p>
+                <span className="font-medium">Stripe:</span>{' '}
+                {profile.stripe_account_id ? 'Connected' : 'Not connected'}
+              </p>
+            </div>
+            <button
+              className="mt-4 px-4 py-2 rounded-lg bg-brand-dark text-white font-medium hover:bg-brand transition"
+              onClick={setupPayouts}
+            >
               {profile.stripe_account_id ? 'Edit Stripe payout settings' : 'Set up payouts'}
             </button>
-          </div>
+          </section>
         )}
 
-        {/* Earnings Card */}
-        <div className="card space-y-4">
-          <h3 className="text-xl font-semibold">Earnings</h3>
+        {/* Earnings */}
+        <section>
+          <h2 className="text-xl font-semibold mb-4">Earnings</h2>
           {payments.length === 0 ? (
-            <p className="text-gray-600">No payments yet.</p>
+            <p className="text-brand-dark/70">No payments yet.</p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+            <div className="overflow-x-auto rounded-xl border border-brand-muted/30 bg-white shadow-sm">
+              <table className="w-full text-left border-collapse">
+                <thead className="bg-brand-light text-brand-dark">
                   <tr>
-                    <th className="px-4 py-2 text-left text-gray-600 font-medium">Type</th>
-                    <th className="px-4 py-2 text-left text-gray-600 font-medium">Amount</th>
-                    <th className="px-4 py-2 text-left text-gray-600 font-medium">Status</th>
-                    <th className="px-4 py-2 text-left text-gray-600 font-medium">Date</th>
+                    <th className="px-4 py-3 font-medium">Type</th>
+                    <th className="px-4 py-3 font-medium">Amount</th>
+                    <th className="px-4 py-3 font-medium">Status</th>
+                    <th className="px-4 py-3 font-medium">Date</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {payments.map(p => (
-                    <tr key={p.id}>
-                      <td className="px-4 py-2">{p.type}</td>
-                      <td className="px-4 py-2">${(p.amount / 100).toFixed(2)}</td>
-                      <td className="px-4 py-2 capitalize">{p.status}</td>
-                      <td className="px-4 py-2">{new Date(p.created_at).toLocaleString()}</td>
+                <tbody className="divide-y divide-brand-muted/30">
+                  {payments.map((p) => (
+                    <tr key={p.id} className="hover:bg-brand-light/40 transition">
+                      <td className="px-4 py-3 capitalize">{p.type}</td>
+                      <td className="px-4 py-3 font-medium text-brand-primary">
+                        ${(p.amount / 100).toFixed(2)}
+                      </td>
+                      <td className="px-4 py-3">{p.status}</td>
+                      <td className="px-4 py-3">{new Date(p.created_at).toLocaleString()}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           )}
-        </div>
+        </section>
       </main>
     </>
   )
