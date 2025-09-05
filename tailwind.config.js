@@ -1,23 +1,23 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './app/**/*.{js,ts,jsx,tsx,mdx}',
-    './pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    "./app/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
+    "./pages/**/*.{js,ts,jsx,tsx}", // keep while we migrate api routes later
   ],
   theme: {
     extend: {
-      fontFamily: {
-        sans: ['var(--font-inter)', 'sans-serif'],   // body
-        heading: ['var(--font-lora)', 'serif'], // headings
-      },
       colors: {
         brand: {
-          light: '#CBDCEB',
-          DEFAULT: '#608BC1',
-          dark: '#133E87',
-          background: '#F3F3E0',
+          light: "#F3F3E0",
+          dark: "#133E87",
+          primary: "#608BC1",
+          muted: "#CBDCEB",
         },
+      },
+      fontFamily: {
+        heading: ['var(--font-lora)', 'serif'],
+        sans: ['var(--font-inter)', 'ui-sans-serif', 'system-ui'],
       },
     },
   },
