@@ -13,11 +13,18 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
   useEffect(() => {
     const s = supabaseBrowser()
     s.auth.getUser().then(({ data: { user } }) => {
-      if (!user) router.replace('/signin?next=' + encodeURIComponent(pathname))
+      if (!user) {
+        const redirectTo = pathname ? `/signin?next=${encodeURIComponent(pathname)}` : '/signin'
+        router.replace(redirectTo)
+      }
       setReady(true)
     })
+
     const { data: sub } = s.auth.onAuthStateChange((_e, session) => {
-      if (!session?.user) router.replace('/signin?next=' + encodeURIComponent(pathname))
+      if (!session?.user) {
+        const redirectTo = pathname ? `/signin?next=${encodeURIComponent(pathname)}` : '/signin'
+        router.replace(redirectTo)
+      }
     })
     return () => { sub?.subscription?.unsubscribe() }
   }, [router, pathname])
@@ -25,7 +32,6 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
   if (!ready) return null
   return (
     <>
-      <Nav />
       {children}
     </>
   )

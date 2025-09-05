@@ -17,7 +17,6 @@ export default function SignInPage() {
 
   return (
     <>
-      <Nav />
       <main className="max-w-md mx-auto px-6 py-16 space-y-6">
         <h1 className="text-3xl font-heading">Sign in</h1>
         <button className="btn w-full" onClick={() => signInWithGoogle()}>

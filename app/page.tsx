@@ -4,7 +4,6 @@ import Link from 'next/link'
 export default function HomePage() {
   return (
     <>
-      <Nav />
       <main className="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
         <div className="space-y-6">
           <h1 className="text-5xl font-heading leading-tight">

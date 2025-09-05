@@ -1,3 +1,4 @@
+import Nav from '@/components/Nav'
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter, Lora } from 'next/font/google'
@@ -14,6 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${inter.variable} ${lora.variable}`}>
       <body className="font-sans bg-brand-light text-brand-dark">
+        <Nav />
         {children}
       </body>
     </html>
