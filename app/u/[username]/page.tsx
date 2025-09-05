@@ -67,7 +67,6 @@ export default function PublicProfile() {
 
     return (
         <>
-            <Nav />
             <main className="max-w-3xl mx-auto px-6 py-12 space-y-6">
                 <div className="flex items-center gap-4">
                     {profile.avatar_url && (
