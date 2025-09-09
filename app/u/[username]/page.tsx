@@ -67,26 +67,42 @@ export default function PublicProfile() {
 
     return (
         <>
-            <main className="max-w-3xl mx-auto px-6 py-12 space-y-6">
-                <div className="flex items-center gap-4">
+            {/* Top grid: Avatar | QR */}
+            <section className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                {/* Left: Avatar + text + CTA */}
+                <div className="flex flex-col gap-6">
                     {profile.avatar_url && (
                         <img
                             src={profile.avatar_url}
-                            className="w-20 h-20 rounded-xl object-cover border border-brand-muted"
+                            className="avatar-xl"
                             alt={profile.display_name ?? profile.username ?? 'Profile avatar'}
                         />
                     )}
+
                     <div>
-                        <h1 className="text-3xl font-heading">@{profile.username ?? 'unknown'}</h1>
-                        {profile.display_name && <p className="text-brand-dark/80">{profile.display_name}</p>}
+                        {profile.display_name && <h1>{profile.display_name}</h1>}
+                        <div className="lead muted">@{profile.username ?? 'unknown'}</div>
+                        {profile.bio && <p className="mt-3">{profile.bio}</p>}
                     </div>
+
+                    <button className="btn-primary ring-brand w-full md:w-auto">
+                        Support {profile.display_name ?? profile.username ?? 'User'}
+                        <span className="block text-[14px] font-semibold opacity-80"> $4/mo</span>
+                    </button>
                 </div>
 
-                {profile.bio && <p className="text-brand-dark/80">{profile.bio}</p>}
-
-                {/* Your CTAs */}
-                {/* ... */}
-            </main>
+                {/* Right: QR panel + recent support */}
+                <div className="sheet p-4 md:p-6 flex flex-col justify-around">
+                    <div className="mx-auto">
+                        <div className="qr-frame">
+                            {/* your QR image/canvas here */}
+                            {profile.qr_code_url && (
+                                <img src={profile.qr_code_url} alt="Support QR" className="w-56 h-56 object-contain" />
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </section>
         </>
     )
 }
