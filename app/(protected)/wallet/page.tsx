@@ -11,15 +11,15 @@ export default function Wallet() {
     const s = supabaseBrowser()
     s.auth.getUser().then(async ({ data }) => {
       if (!data.user) return
-      const { data: b } = await s.from('badges').select('*').eq('supporter_id', data.user.id).order('created_at', { ascending:false })
+      const { data: b } = await s.from('badges').select('*').eq('supporter_id', data.user.id).order('created_at', { ascending: false })
       setBadges(b || [])
-      const { data: p } = await s.from('payments').select('*').eq('supporter_id', data.user.id).eq('type','subscription')
+      const { data: p } = await s.from('payments').select('*').eq('supporter_id', data.user.id).eq('type', 'subscription')
       setSubs(p || [])
     })
   }, [])
 
   return (
-    <main className="max-w-5xl mx-auto px-6 py-10 space-y-10">
+    <>
       <h1 className="text-3xl font-heading">Your Wallet</h1>
 
       <section>
@@ -50,6 +50,6 @@ export default function Wallet() {
           </div>
         )}
       </section>
-    </main>
+    </>
   )
 }

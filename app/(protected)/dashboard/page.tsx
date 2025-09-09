@@ -29,7 +29,7 @@ export default function Dashboard() {
   }
 
   return (
-    <main className="max-w-6xl mx-auto px-6 py-10 space-y-10">
+    <>
       <h1 className="text-3xl font-heading">Dashboard</h1>
 
       {profile && (
@@ -74,6 +74,6 @@ export default function Dashboard() {
           </div>
         )}
       </section>
-    </main>
+    </>
   )
 }
