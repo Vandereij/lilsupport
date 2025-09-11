@@ -58,13 +58,13 @@ export async function POST(req: Request) {
     .update({ avatar_url, avatar_path: newPath })
     .eq('id', user.id);
   if (updErr) {
-    await supabase.storage.from('avatars').remove([relNewPath]).catch(() => {});
+    await supabase.storage.from('avatars').remove([relNewPath]).catch(() => { });
     return NextResponse.json({ ok: false, error: updErr.message }, { status: 400 });
   }
 
   if (oldPath && oldPath !== newPath) {
     const relOld = oldPath.replace(/^avatars\//, '');
-    await supabase.storage.from('avatars').remove([relOld]).catch(() => {});
+    await supabase.storage.from('avatars').remove([relOld]).catch(() => { });
   }
 
   return NextResponse.json({ ok: true, avatar_url });

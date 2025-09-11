@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { supabaseBrowser } from '@/lib/supabaseClient'
 import { createClient } from '@supabase/supabase-js'
-import { uploadAvatar } from './actions';
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -44,38 +43,38 @@ export default function EditProfile() {
     }
 
     async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
-  const file = e.target.files?.[0];
-  if (!file) return;
+        const file = e.target.files?.[0];
+        if (!file) return;
 
-  setLoading(true);
-  setError(null);
+        setLoading(true);
+        setError(null);
 
-  const fd = new FormData();
-  fd.append('avatar', file);
+        const fd = new FormData();
+        fd.append('avatar', file);
 
-  try {
-    const s = supabaseBrowser();
-    const { data: sess } = await s.auth.getSession();
-    const token = sess?.session?.access_token;
+        try {
+            const s = supabaseBrowser();
+            const { data: sess } = await s.auth.getSession();
+            const token = sess?.session?.access_token;
 
-    const res = await fetch('/api/profile/avatar', {
-      method: 'POST',
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-      body: fd,
-    });
+            const res = await fetch('/api/profile/avatar', {
+                method: 'POST',
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
+                body: fd,
+            });
 
-    const result = await res.json();
-    if (res.ok && result.ok) {
-      setAvatarUrl(result.avatar_url ?? null);
-    } else {
-      setError(result.error ?? 'Upload failed');
+            const result = await res.json();
+            if (res.ok && result.ok) {
+                setAvatarUrl(result.avatar_url ?? null);
+            } else {
+                setError(result.error ?? 'Upload failed');
+            }
+        } catch (err: any) {
+            setError(err.message ?? 'Unexpected error');
+        } finally {
+            setLoading(false);
+        }
     }
-  } catch (err: any) {
-    setError(err.message ?? 'Unexpected error');
-  } finally {
-    setLoading(false);
-  }
-}
 
 
     const regenerateQR = async () => {
