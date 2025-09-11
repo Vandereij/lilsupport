@@ -79,7 +79,7 @@ export default function Nav() {
 
   return (
     <nav className="sticky top-0 z-50 bg-brand-light/90 backdrop-blur-md shadow-sm">
-      <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-3">
+      <div className="max-w-6xl mx-auto flex items-center justify-between md:px8 px-6 py-3">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <Image src="/logo.svg" width={120} height={30} alt="LilSupport" />

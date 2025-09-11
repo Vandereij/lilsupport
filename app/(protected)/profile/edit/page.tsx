@@ -178,7 +178,7 @@ export default function EditProfilePolished() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="mx-auto max-w-1xl">
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
