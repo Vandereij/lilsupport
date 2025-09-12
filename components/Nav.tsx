@@ -78,12 +78,8 @@ export default function Nav() {
     "relative px-2 py-1 text-brand-dark hover:text-brand transition font-medium after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-gradient-to-r after:from-brand-dark after:to-brand after:rounded-full hover:after:w-full after:transition-all after:duration-300"
 
   return (
-    <nav className="sticky top-0 z-50 bg-brand-light/90 backdrop-blur-md shadow-sm">
+    <nav className="sticky top-0 z-50 bg-brand-light/90 backdrop-blur-md">
       <div className="max-w-6xl mx-auto flex items-center justify-between md:px8 px-6 py-3">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo.svg" width={120} height={30} alt="LilSupport" />
-        </Link>
 
         {/* Links */}
         <div className="flex items-center gap-6">

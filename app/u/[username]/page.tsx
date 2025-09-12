@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { supabaseBrowser } from '@/lib/supabaseClient'
 import type { Profile } from '@/types/database'
-import Nav from '@/components/Nav'
+import SupportWidget from "@/components/SupportWidget";
+import SubscribeButton from '@/components/SubscribeButton'
 
 export default function PublicProfile() {
     const params = useParams<{ username: string }>()
@@ -85,10 +86,9 @@ export default function PublicProfile() {
                         {profile.bio && <p className="mt-3">{profile.bio}</p>}
                     </div>
 
-                    <button className="btn-primary ring-brand w-full md:w-auto">
-                        Support {profile.display_name ?? profile.username ?? 'User'}
-                        <span className="block text-[14px] font-semibold opacity-80"> $4/mo</span>
-                    </button>
+                    <SubscribeButton username={params.username} />
+
+                    <SupportWidget username={params.username} />
                 </div>
 
                 {/* Right: QR panel + recent support */}

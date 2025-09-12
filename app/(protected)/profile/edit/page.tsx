@@ -8,9 +8,17 @@ const MAX_BIO = 240;
 function cn(...classes: (string | false | null | undefined)[]) {
   return classes.filter(Boolean).join(" ");
 }
-function formatHandle(v: string) {
-  return v.replace(/^@/, "");
+function normalizeHandle(v: string) {
+  return v.replace(/^@/, "").trim().toLowerCase();
 }
+
+type InitialSnapshot = {
+  username: string;
+  display_name: string;
+  bio: string;
+  avatar_url: string | null;
+  qr_code_url: string;
+};
 
 export default function EditProfilePolished() {
   const [username, setUsername] = useState("");
@@ -39,32 +47,73 @@ export default function EditProfilePolished() {
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  // Keep an initial snapshot to compute diffs
+  const initialRef = useRef<InitialSnapshot>({
+    username: "",
+    display_name: "",
+    bio: "",
+    avatar_url: null,
+    qr_code_url: "",
+  });
+
+  // Load or create profile row
   useEffect(() => {
-    const s = supabaseBrowser();
-    s.auth.getUser().then(async ({ data }) => {
+    let cancelled = false;
+    (async () => {
+      const s = supabaseBrowser();
+      const { data } = await s.auth.getUser();
       if (!data.user) return;
-      const { data: p } = await s
+      const uid = data.user.id;
+
+      const { data: p, error: perr } = await s
         .from("profiles")
         .select("*")
-        .eq("id", data.user.id)
-        .single();
-      if (p) {
-        setUsername(p.username || "");
-        setDisplayName(p.display_name || "");
-        setBio(p.bio || "");
-        setAvatarUrl(p.avatar_url || "");
-        setQrUrl(p.qr_code_url || "");
+        .eq("id", uid)
+        .maybeSingle();
+
+      let profile = p;
+      if (!perr && !profile) {
+        // First-time: create minimal row
+        const { data: inserted, error: insErr } = await s
+          .from("profiles")
+          .insert({ id: uid })
+          .select("*")
+          .maybeSingle();
+        if (insErr) return;
+        profile = inserted ?? null;
       }
-    });
+
+      if (!cancelled && profile) {
+        setUsername(profile.username || "");
+        setDisplayName(profile.display_name || "");
+        setBio(profile.bio || "");
+        setAvatarUrl(profile.avatar_url ?? null); // <- keep nulls as null
+        setQrUrl(profile.qr_code_url || "");
+
+        initialRef.current = {
+          username: profile.username || "",
+          display_name: profile.display_name || "",
+          bio: profile.bio || "",
+          avatar_url: profile.avatar_url ?? null,
+          qr_code_url: profile.qr_code_url || "",
+        };
+        setDirty(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Derived UI state
+  const normalizedHandle = useMemo(() => normalizeHandle(username), [username]);
+
   const usernameError = useMemo(() => {
-    const v = formatHandle(username).trim();
+    const v = normalizedHandle;
     if (!v) return null;
     if (!/^[a-z0-9_.]{3,20}$/i.test(v)) return "3–20 chars, letters/numbers/._ only";
     return null;
-  }, [username]);
+  }, [normalizedHandle]);
 
   const bioCount = `${bio.length}/${MAX_BIO}`;
 
@@ -72,17 +121,100 @@ export default function EditProfilePolished() {
     try {
       setSaving(true);
       const s = supabaseBrowser();
+
+      // Must be logged in
       const { data: u } = await s.auth.getUser();
-      if (!u.user) return;
-      await s.from("profiles").upsert({
-        id: u.user.id,
-        username: formatHandle(username),
-        display_name: displayName,
-        bio,
-        avatar_url: avatarUrl,
-      });
-      setDirty(false);
-      toast.success("Saved");
+      if (!u.user) {
+        toast.error("Please sign in");
+        return;
+      }
+      const uid = u.user.id;
+
+      // Validate handle
+      if (!normalizedHandle) {
+        toast.error("Username is required");
+        return;
+      }
+      if (usernameError) {
+        toast.error(usernameError);
+        return;
+      }
+
+      // Compute minimal changes
+      const changes: Record<string, any> = {};
+      if (normalizedHandle !== initialRef.current.username)
+        changes.username = normalizedHandle;
+      if (displayName !== initialRef.current.display_name)
+        changes.display_name = displayName;
+      if (bio !== initialRef.current.bio) changes.bio = bio;
+
+      // normalize avatar: empty string → null
+      const normalizedAvatar = avatarUrl ?? null;
+      if (normalizedAvatar !== initialRef.current.avatar_url)
+        changes.avatar_url = normalizedAvatar;
+
+      if (Object.keys(changes).length === 0) {
+        toast.warn("No changes to save");
+        return;
+      }
+
+      // Ensure username is unique (case-insensitive), excluding me
+      if ("username" in changes) {
+        const { data: dup } = await s
+          .from("profiles")
+          .select("id")
+          .ilike("username", normalizedHandle) // exact ILIKE match
+          .neq("id", uid)
+          .limit(1);
+        if (dup && dup.length > 0) {
+          toast.error("That username is already taken");
+          return;
+        }
+      }
+
+      // Try UPDATE first (RLS-friendly)
+      const { data: updRow, error: updErr } = await s
+        .from("profiles")
+        .update(changes)
+        .eq("id", uid)
+        .select("id")
+        .maybeSingle();
+
+      if (updErr) {
+        toast.error(updErr.message || "Save failed");
+        return;
+      }
+
+      // If nothing updated (row missing), INSERT
+      let wrote = Boolean(updRow);
+      if (!wrote) {
+        const { data: insRow, error: insErr } = await s
+          .from("profiles")
+          .insert({ id: uid, ...changes })
+          .select("id")
+          .maybeSingle();
+
+        if (insErr) {
+          toast.error(insErr.message || "Save failed");
+          return;
+        }
+        wrote = Boolean(insRow);
+      }
+
+      if (wrote) {
+        // refresh snapshot
+        initialRef.current = {
+          username: "username" in changes ? normalizedHandle : initialRef.current.username,
+          display_name:
+            "display_name" in changes ? displayName : initialRef.current.display_name,
+          bio: "bio" in changes ? bio : initialRef.current.bio,
+          avatar_url:
+            "avatar_url" in changes ? normalizedAvatar : initialRef.current.avatar_url,
+          qr_code_url: initialRef.current.qr_code_url,
+        };
+        setDirty(false);
+        toast.success("Saved");
+      }
     } catch (e: any) {
       toast.error(e?.message ?? "Save failed");
     } finally {
@@ -111,7 +243,8 @@ export default function EditProfilePolished() {
 
       const result = await res.json();
       if (res.ok && result.ok) {
-        setAvatarUrl(result.avatar_url ?? null);
+        setAvatarUrl(result.avatar_url ?? null); // keep nulls as null
+        setDirty(true);
         toast.success("Avatar updated");
       } else {
         const msg = result.error ?? "Upload failed";
@@ -140,7 +273,7 @@ export default function EditProfilePolished() {
   };
 
   const regenerateQR = async () => {
-    const handle = formatHandle(username).trim();
+    const handle = normalizedHandle;
     if (!handle) {
       toast.warn("Set your username first");
       return;
@@ -238,7 +371,7 @@ export default function EditProfilePolished() {
               </div>
               <p className="mt-1 text-xs text-muted-foreground">
                 Your public profile will be available at{" "}
-                <code>@{formatHandle(username) || "yourhandle"}</code>
+                <code>@{normalizedHandle || "yourhandle"}</code>
               </p>
             </div>
 
@@ -342,7 +475,7 @@ export default function EditProfilePolished() {
                     >
                       choose a file
                     </button>
-                    . Recommended 512×512+.
+                    . Recommended 512×512.
                   </p>
 
                   <div className="mt-3 flex flex-wrap gap-2">
@@ -414,12 +547,9 @@ export default function EditProfilePolished() {
 
           {/* QR */}
           <div className="mt-6 space-y-3">
-            <button className="btn-primary w-full" onClick={regenerateQR}>
-              Regenerate QR
-            </button>
             {qrUrl && (
               <div className="mt-2">
-                <p className="text-sm mb-2">QR code</p>
+                <p className="text-sm mb-2">Create or regenerate your QR code</p>
                 <div className="p-4 rounded-xl bg-white border shadow-sm w-fit mx-auto">
                   <img
                     src={qrUrl}
@@ -445,11 +575,13 @@ export default function EditProfilePolished() {
                 </div>
               </div>
             )}
+            <button className="btn-primary w-full" onClick={regenerateQR}>
+              Regenerate QR
+            </button>
           </div>
         </aside>
       </div>
 
-      {/* Toasts */}
       <ToastViewport />
     </div>
   );
@@ -470,7 +602,6 @@ const toast = {
 function emit(t: Toast) {
   listeners.forEach((l) => l(t));
 }
-
 function ToastViewport() {
   const [items, setItems] = useState<Toast[]>([]);
   useEffect(() => {

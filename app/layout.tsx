@@ -1,6 +1,8 @@
 import Nav from "@/components/Nav";
 import "./globals.css";
 import { Inter, Manrope } from "next/font/google";
+import Link from 'next/link'
+import Image from 'next/image'
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope" });
@@ -15,7 +17,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <header className="w-full max-w-6xl mx-auto flex items-center justify-between py-6 md:py-7 px-6 md:px-2">
           <div className="flex items-center gap-3">
             {/* Replace with your SVG/logo */}
-            <span className="font-display text-[24px] font-extrabold text-primary-900">LilSupport</span>
+
+            <Link href="/" className="flex items-center gap-2">
+              <Image src="/logo.svg" width={200} height={30} alt="LilSupport Brand Logo" />
+              {/* <Image src="/logo.svg" width={120} height={30} alt="LilSupport" /> */}
+            </Link>
           </div>
           <Nav />
         </header>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { supabaseBrowser } from '@/lib/supabaseClient'
+import PayoutsPanel from '@/components/PayoutsPanel'
 
 export default function Dashboard() {
   const [profile, setProfile] = useState<any>(null)
@@ -42,6 +43,7 @@ export default function Dashboard() {
           <button className="btn mt-4" onClick={setupPayouts}>
             {profile.stripe_account_id ? 'Edit Stripe payout settings' : 'Set up payouts'}
           </button>
+          <PayoutsPanel userId={profile.id} />
         </section>
       )}
 
