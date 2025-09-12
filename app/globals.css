@@ -1,11 +1,9 @@
-/* === LilSupport – Design Tokens & Helpers === */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* === LilSupport – Tailwind v4 setup === */
+@import "tailwindcss";
 
-/* === LilSupport — Whole-app Style === */
-:root {
-  /* Core */
+/* Theme tokens -> generate utilities (bg-*, text-*, border-*, shadow-*, rounded-*) */
+@theme {
+  /* Colors */
   --color-bg: #f6e9fe;
   --color-surface: #fffaff;
   --color-surface-alt: #e4d9fc;
@@ -13,11 +11,9 @@
   --color-ink-muted: #a298ad;
   --color-primary-900: #1b0947;
 
-  /* Accents */
   --color-accent-100: #fcc8c1;
   --color-accent-200: #fec6b2;
 
-  /* Utility */
   --color-card-tint: #e7d9f9;
   --color-card-tint-2: #f7ebfd;
   --color-border: #e0d9e8;
@@ -27,12 +23,16 @@
   --radius-lg: 16px;
   --radius-pill: 9999px;
 
-  /* Effects */
+  /* Shadows */
   --shadow-card: 0 8px 30px rgba(27, 9, 71, 0.06);
+}
+
+/* Non-utility custom props that you reference directly */
+:root {
   --ring-focus: 0 0 0 3px rgba(27, 9, 71, 0.08), 0 0 0 1px var(--color-primary-900);
 }
 
-/* Background: subtle vertical tint + radial glow (like the mock) */
+/* === LilSupport — Whole-app Style === */
 html,
 body {
   background:
@@ -54,7 +54,7 @@ body {
   }
 
   .form-field:disabled {
-    @apply bg-surfaceAlt text-muted cursor-not-allowed;
+    @apply bg-surface-alt text-ink-muted cursor-not-allowed;
   }
 
   /* For <textarea>, make sure it grows vertically */
@@ -63,8 +63,8 @@ body {
   }
 
   .form-field-tinted {
-    @apply w-full px-4 py-3 rounded-lg text-base text-ink placeholder-muted;
-    @apply border border-transparent bg-surfaceAlt shadow-inner;
+    @apply w-full px-4 py-3 rounded-lg text-base text-ink placeholder-ink-muted;
+    @apply border border-transparent bg-surface-alt shadow-inner;
     @apply transition duration-150 ease-in-out;
 
     font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -145,15 +145,11 @@ a:hover {
 
 /* “Card / Sheet” like the big rounded app shell */
 .card {
-  background: var(--color-surface);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-card);
+  @apply bg-surface rounded-xl shadow-card;
 }
 
-/* Lilac panel (QR column) */
 .sheet {
-  background: var(--color-surface-alt);
-  border-radius: var(--radius-xl);
+  @apply bg-surface-alt rounded-xl;
 }
 
 /* Brand gradient button fill */
@@ -177,9 +173,7 @@ a:hover {
 
 /* Dividers subtle like the “Recent support” section */
 .hr-soft {
-  height: 1px;
-  background: var(--color-border);
-  opacity: .8;
+  @apply h-px bg-border opacity-80;
 }
 
 /* Avatar / QR framing */
@@ -231,11 +225,11 @@ a:hover {
 
 /* Stat tiles, matching pink / lilac tints */
 .stat-lilac {
-  background: #f7ebfd;
+  background: var(--color-card-tint-2);
 }
 
 .stat-peach {
-  background: color-mix(in srgb, #fec6b2 18%, white);
+  background: color-mix(in srgb, var(--color-accent-200) 18%, white);
 }
 
 /* Footer social icon buttons */
