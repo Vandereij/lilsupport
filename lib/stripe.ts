@@ -10,6 +10,6 @@ export function getStripe() {
     // Don't throw at import time; throw here and let the route catch & JSON it.
     throw new Error("Missing STRIPE_SECRET_KEY");
   }
-  _stripe = new Stripe(key, { apiVersion: "2024-06-20" });
+  _stripe = new Stripe(key, { apiVersion: "2025-08-27.basil" });
   return _stripe;
 }
