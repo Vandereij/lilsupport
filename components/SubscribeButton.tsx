@@ -28,25 +28,25 @@ export default function SubscribeButton({
       }
 
       const res = await fetch("/api/checkout/subscription", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ recipientUsername: username, supporterId: null }),
-});
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ recipientUsername: username, supporterId: null }),
+      });
 
-const ct = res.headers.get("content-type") || "";
-let data: any = null;
-if (ct.includes("application/json")) {
-  data = await res.json();
-} else {
-  const text = await res.text();
-  throw new Error(`Unexpected non-JSON response (${res.status}): ${text.slice(0, 200)}`);
-}
+      const ct = res.headers.get("content-type") || "";
+      let data: any = null;
+      if (ct.includes("application/json")) {
+        data = await res.json();
+      } else {
+        const text = await res.text();
+        throw new Error(`Unexpected non-JSON response (${res.status}): ${text.slice(0, 200)}`);
+      }
 
-if (!res.ok || !data?.url) {
-  throw new Error(data?.error || "Failed to start subscription");
-}
+      if (!res.ok || !data?.url) {
+        throw new Error(data?.error || "Failed to start subscription");
+      }
 
-window.location.href = data.url;
+      window.location.href = data.url;
     } catch (e: any) {
       setErr(e.message || "Something went wrong");
       setLoading(false);

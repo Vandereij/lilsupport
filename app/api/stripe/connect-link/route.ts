@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
 
   // 3) Generate an onboarding link (multi-use: first-time or to finish later)
   const refreshUrl = `${process.env.SITE_URL}/dashboard?onboarding=refresh`;
-  const returnUrl  = `${process.env.SITE_URL}/dashboard?onboarding=done`;
+  const returnUrl = `${process.env.SITE_URL}/dashboard?onboarding=done`;
 
   const link = await getStripe.arguments.accountLinks.create({
     account: accountId,

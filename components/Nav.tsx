@@ -14,17 +14,17 @@ export default function Nav() {
   useEffect(() => {
     const s = supabaseBrowser()
 
-    ;(async () => {
-      const { data: { user } } = await s.auth.getUser()
-      setSignedIn(!!user)
-    })()
+      ; (async () => {
+        const { data: { user } } = await s.auth.getUser()
+        setSignedIn(!!user)
+      })()
 
     const { data: { subscription } } = s.auth.onAuthStateChange((_e, session) => {
       setSignedIn(!!session?.user)
     })
 
     return () => {
-      try { subscription.unsubscribe() } catch {}
+      try { subscription.unsubscribe() } catch { }
     }
   }, [])
 
@@ -35,29 +35,29 @@ export default function Nav() {
     let alive = true
     const s = supabaseBrowser()
 
-    ;(async () => {
-      try {
-        const { data: { user } } = await s.auth.getUser()
-        if (!alive || !user) { setUsername(null); return }
+      ; (async () => {
+        try {
+          const { data: { user } } = await s.auth.getUser()
+          if (!alive || !user) { setUsername(null); return }
 
-        const { data, error } = await s
-          .from('profiles')
-          .select('username')
-          .eq('id', user.id)
-          .maybeSingle()
+          const { data, error } = await s
+            .from('profiles')
+            .select('username')
+            .eq('id', user.id)
+            .maybeSingle()
 
-        if (!alive) return
-        if (error) {
-          console.warn('profiles username fetch:', error.message)
+          if (!alive) return
+          if (error) {
+            console.warn('profiles username fetch:', error.message)
+            setUsername(null)
+          } else {
+            setUsername(data?.username ?? null)
+          }
+        } catch (err) {
+          console.warn('username fetch failed:', err)
           setUsername(null)
-        } else {
-          setUsername(data?.username ?? null)
         }
-      } catch (err) {
-        console.warn('username fetch failed:', err)
-        setUsername(null)
-      }
-    })()
+      })()
 
     return () => { alive = false }
   }, [signedIn])

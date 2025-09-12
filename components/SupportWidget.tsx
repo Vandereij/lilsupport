@@ -37,25 +37,25 @@ export default function SupportWidget({
       }
 
       const res = await fetch("/api/checkout/session", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ recipientUsername: username, supporterId: null }),
-});
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ recipientUsername: username, supporterId: null }),
+      });
 
-const ct = res.headers.get("content-type") || "";
-let data: any = null;
-if (ct.includes("application/json")) {
-  data = await res.json();
-} else {
-  const text = await res.text();
-  throw new Error(`Unexpected non-JSON response (${res.status}): ${text.slice(0, 200)}`);
-}
+      const ct = res.headers.get("content-type") || "";
+      let data: any = null;
+      if (ct.includes("application/json")) {
+        data = await res.json();
+      } else {
+        const text = await res.text();
+        throw new Error(`Unexpected non-JSON response (${res.status}): ${text.slice(0, 200)}`);
+      }
 
-if (!res.ok || !data?.url) {
-  throw new Error(data?.error || "Failed to start subscription");
-}
+      if (!res.ok || !data?.url) {
+        throw new Error(data?.error || "Failed to start subscription");
+      }
 
-window.location.href = data.url;
+      window.location.href = data.url;
     } catch (e: any) {
       setErr(e.message);
       setLoading(false);
@@ -72,9 +72,8 @@ window.location.href = data.url;
               setPreset(v);
               setCustom("");
             }}
-            className={`flex-1 rounded-xl border px-3 py-2 ${
-              preset === v ? "bg-black text-white" : "bg-white"
-            }`}
+            className={`flex-1 rounded-xl border px-3 py-2 ${preset === v ? "bg-black text-white" : "bg-white"
+              }`}
           >
             ${v}
           </button>

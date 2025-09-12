@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
         ? session.customer
         : session.customer?.id || null;
       const supporterEmail = session.customer_details?.email || null;
-      const supporterName  = session.customer_details?.name || null;
+      const supporterName = session.customer_details?.name || null;
 
       const supporterId = session.metadata?.supporter_id || null;
       const recipientId = session.metadata?.recipient_id;
@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
       // Derive the period from the first line item
       const firstLine = invoice.lines?.data?.[0];
       const periodStart = firstLine?.period?.start ? new Date(firstLine.period.start * 1000).toISOString() : null;
-      const periodEnd   = firstLine?.period?.end   ? new Date(firstLine.period.end   * 1000).toISOString() : null;
+      const periodEnd = firstLine?.period?.end ? new Date(firstLine.period.end * 1000).toISOString() : null;
 
       if (recipientId) {
         const { error } = await supabase.from("payments").insert({

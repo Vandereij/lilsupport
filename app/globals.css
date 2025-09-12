@@ -33,10 +33,11 @@
 }
 
 /* Background: subtle vertical tint + radial glow (like the mock) */
-html, body {
+html,
+body {
   background:
-    radial-gradient(1000px 600px at 10% -10%, rgba(255,255,255,.45), transparent 60%),
-    radial-gradient(900px 540px at 90% -10%, rgba(255,255,255,.35), transparent 60%),
+    radial-gradient(1000px 600px at 10% -10%, rgba(255, 255, 255, .45), transparent 60%),
+    radial-gradient(900px 540px at 90% -10%, rgba(255, 255, 255, .35), transparent 60%),
     linear-gradient(180deg, #f1e6fb 0%, #f6e9fe 30%, #f6e9fe 100%);
   color: var(--color-ink);
   font-feature-settings: "case" 1, "rlig" 1, "calt" 1;
@@ -59,7 +60,9 @@ html, body {
   /* For <textarea>, make sure it grows vertically */
   textarea.form-field {
     @apply min-h-[120px] resize-y;
-  }  .form-field-tinted {
+  }
+
+  .form-field-tinted {
     @apply w-full px-4 py-3 rounded-lg text-base text-ink placeholder-muted;
     @apply border border-transparent bg-surfaceAlt shadow-inner;
     @apply transition duration-150 ease-in-out;
@@ -85,23 +88,60 @@ html, body {
 
 /* Headings scale close to the comp */
 @layer base {
-  h1 { font-family: var(--font-manrope, Manrope), var(--font-inter, Inter), system-ui;
-       font-weight: 800; font-size: 40px; line-height: 48px; color: var(--color-ink); }
-  h2 { font-weight: 700; font-size: 28px; line-height: 36px; }
-  h3 { font-weight: 700; font-size: 20px; line-height: 28px; }
-  .lead { font-size: 18px; line-height: 28px; font-weight: 500; }
-  .muted { color: var(--color-ink-muted); }
+  h1 {
+    font-family: var(--font-manrope, Manrope), var(--font-inter, Inter), system-ui;
+    font-weight: 800;
+    font-size: 40px;
+    line-height: 48px;
+    color: var(--color-ink);
+  }
+
+  h2 {
+    font-weight: 700;
+    font-size: 28px;
+    line-height: 36px;
+  }
+
+  h3 {
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .lead {
+    font-size: 18px;
+    line-height: 28px;
+    font-weight: 500;
+  }
+
+  .muted {
+    color: var(--color-ink-muted);
+  }
 }
 
 /* Selection hue to match the brand */
-::selection { background: var(--color-card-tint); color: var(--color-ink); }
+::selection {
+  background: var(--color-card-tint);
+  color: var(--color-ink);
+}
 
 /* Links match nav in mock: muted → plum on hover */
-a { color: var(--color-ink); opacity: .85; transition: color .15s ease, opacity .15s ease; }
-a:hover { color: var(--color-primary-900); opacity: 1; }
+a {
+  color: var(--color-ink);
+  opacity: .85;
+  transition: color .15s ease, opacity .15s ease;
+}
+
+a:hover {
+  color: var(--color-primary-900);
+  opacity: 1;
+}
 
 /* Focus ring used across the app */
-.ring-brand:focus-visible { outline: none; box-shadow: var(--ring-focus); }
+.ring-brand:focus-visible {
+  outline: none;
+  box-shadow: var(--ring-focus);
+}
 
 /* “Card / Sheet” like the big rounded app shell */
 .card {
@@ -117,45 +157,96 @@ a:hover { color: var(--color-primary-900); opacity: 1; }
 }
 
 /* Brand gradient button fill */
-.bg-brand-grad { background: linear-gradient(90deg, var(--color-accent-200) 0%, var(--color-accent-100) 100%); }
+.bg-brand-grad {
+  background: linear-gradient(90deg, var(--color-accent-200) 0%, var(--color-accent-100) 100%);
+}
 
 /* Nav link styling from the mock */
 .nav-link {
-  font-size: 18px; line-height: 28px; font-weight: 500;
-  color: var(--color-ink); opacity: .85;
+  font-size: 18px;
+  line-height: 28px;
+  font-weight: 500;
+  color: var(--color-ink);
+  opacity: .85;
 }
-.nav-link:hover { color: var(--color-primary-900); opacity: 1; }
+
+.nav-link:hover {
+  color: var(--color-primary-900);
+  opacity: 1;
+}
 
 /* Dividers subtle like the “Recent support” section */
-.hr-soft { height: 1px; background: var(--color-border); opacity: .8; }
+.hr-soft {
+  height: 1px;
+  background: var(--color-border);
+  opacity: .8;
+}
 
 /* Avatar / QR framing */
-.avatar-xl { width: 232px; height: 232px; border-radius: var(--radius-xl); object-fit: cover; }
-.qr-frame  {
-  background: #fff; border-radius: 12px; padding: 16px;
-  box-shadow: inset 0 0 0 2px rgba(255,255,255,.7);
+.avatar-xl {
+  width: 232px;
+  height: 232px;
+  border-radius: var(--radius-xl);
+  object-fit: cover;
+}
+
+.qr-frame {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .7);
 }
 
 /* Primary button (Support) exactly like comp) */
 .btn-primary {
-  height: 72px; padding: 0 28px; border-radius: var(--radius-lg);
-  font-weight: 800; font-size: 20px; color: var(--color-ink);
+  height: 72px;
+  padding: 0 28px;
+  border-radius: var(--radius-lg);
+  font-weight: 800;
+  font-size: 20px;
+  color: var(--color-ink);
   box-shadow: 0 8px 20px rgba(254, 198, 178, 0.45);
   background: linear-gradient(90deg, #fec6b2 0%, #fcc8c1 100%);
   transition: transform .06s ease, box-shadow .12s ease, filter .12s ease;
 }
-.btn-primary:hover { filter: brightness(1.02); box-shadow: 0 10px 24px rgba(254,198,178,.5); }
-.btn-primary:active { transform: translateY(1px); box-shadow: 0 6px 16px rgba(254,198,178,.35); }
-.btn-primary:focus-visible { box-shadow: var(--ring-focus), 0 8px 20px rgba(254,198,178,.45); }
+
+.btn-primary:hover {
+  filter: brightness(1.02);
+  box-shadow: 0 10px 24px rgba(254, 198, 178, .5);
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
+  box-shadow: 0 6px 16px rgba(254, 198, 178, .35);
+}
+
+.btn-primary:focus-visible {
+  box-shadow: var(--ring-focus), 0 8px 20px rgba(254, 198, 178, .45);
+}
 
 /* Supporter list row hover */
-.row-hover:hover { background: rgba(27, 9, 71, 0.03); }
+.row-hover:hover {
+  background: rgba(27, 9, 71, 0.03);
+}
 
 /* Stat tiles, matching pink / lilac tints */
-.stat-lilac { background: #f7ebfd; }
-.stat-peach { background: color-mix(in srgb, #fec6b2 18%, white); }
+.stat-lilac {
+  background: #f7ebfd;
+}
+
+.stat-peach {
+  background: color-mix(in srgb, #fec6b2 18%, white);
+}
 
 /* Footer social icon buttons */
-.icon-btn { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; }
-.icon-btn:hover { background: rgba(27, 9, 71, 0.06); }
+.icon-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+}
 
+.icon-btn:hover {
+  background: rgba(27, 9, 71, 0.06);
+}

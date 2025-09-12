@@ -90,14 +90,14 @@ export async function POST(req: Request) {
 
   if (updErr) {
     // Roll back the upload so we don't leave orphans
-    await supabase.storage.from('qrcodes').remove([relNewPath]).catch(() => {});
+    await supabase.storage.from('qrcodes').remove([relNewPath]).catch(() => { });
     return NextResponse.json({ ok: false, error: updErr.message }, { status: 400 });
   }
 
   // Best-effort delete of the previous QR file
   if (oldPath && oldPath !== newPath) {
     const relOld = oldPath.replace(/^qrcodes\//, '');
-    await supabase.storage.from('qrcodes').remove([relOld]).catch(() => {});
+    await supabase.storage.from('qrcodes').remove([relOld]).catch(() => { });
   }
 
   return NextResponse.json({ ok: true, url: qr_code_url });
