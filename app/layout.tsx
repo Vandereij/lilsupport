@@ -19,7 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {/* Replace with your SVG/logo */}
 
             <Link href="/" className="flex items-center gap-2">
-              <Image src="/logo.svg" width={200} height={30} alt="LilSupport Brand Logo" />
+              <Image src="/logo-bw.svg" width={200} height={30} alt="LilSupport Brand Logo" />
               {/* <Image src="/logo.svg" width={120} height={30} alt="LilSupport" /> */}
             </Link>
           </div>

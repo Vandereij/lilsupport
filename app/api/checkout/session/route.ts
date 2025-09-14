@@ -34,6 +34,16 @@ export async function POST(req: NextRequest) {
                 message?: string;
             };
 
+        const hasPreset = preset && PRICE_MAP[preset];
+        const hasCustom = Number.isFinite(amountPence) && amountPence! >= 100;
+
+        if (!hasPreset && !hasCustom) {
+            return NextResponse.json(
+                { error: "Missing or invalid amount" },
+                { status: 400 }
+            );
+        }
+
         if (!recipientUsername) {
             return NextResponse.json({ error: "Missing recipientUsername" }, { status: 400 });
         }

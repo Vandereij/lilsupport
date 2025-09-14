@@ -30,8 +30,9 @@ export async function POST(req: NextRequest) {
   // 2) Ensure there's a connected account (create if missing)
   let accountId = profile.stripe_account_id as string | null;
 
+  const stripe = getStripe();
   if (!accountId) {
-    const account = await getStripe.arguments.create({
+    const account = await stripe.accounts.create({
       type: "express",
       country: "GB", // adjust if you infer from user
       capabilities: {
@@ -59,7 +60,7 @@ export async function POST(req: NextRequest) {
   const refreshUrl = `${process.env.SITE_URL}/dashboard?onboarding=refresh`;
   const returnUrl = `${process.env.SITE_URL}/dashboard?onboarding=done`;
 
-  const link = await getStripe.arguments.accountLinks.create({
+  const link = await stripe.accountLinks.create({
     account: accountId,
     refresh_url: refreshUrl,
     return_url: returnUrl,

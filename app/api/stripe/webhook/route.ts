@@ -9,9 +9,10 @@ export async function POST(req: NextRequest) {
   const sig = req.headers.get("stripe-signature");
   const buf = Buffer.from(await req.arrayBuffer());
 
+  const stripe = getStripe();
   let event;
   try {
-    event = getStripe.arguments.webhooks.constructEvent(buf, sig!, process.env.STRIPE_WEBHOOK_SECRET!);
+    event = stripe.webhooks.constructEvent(buf, sig!, process.env.STRIPE_WEBHOOK_SECRET!);
   } catch (err: any) {
     return NextResponse.json({ error: `Webhook signature failed: ${err.message}` }, { status: 400 });
   }
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest) {
       if (session.mode !== "payment") break;
 
       const paymentIntentId = session.payment_intent as string;
-      const pi = await getStripe.arguments.paymentIntents.retrieve(paymentIntentId, { expand: ["charges"] });
+      const pi = await stripe.paymentIntents.retrieve(paymentIntentId, { expand: ["charges"] });
 
       const amount = pi.amount; // minor units
       const status = pi.status;
@@ -68,7 +69,7 @@ export async function POST(req: NextRequest) {
       if (!invoice.subscription) break;
 
       // Pull metadata from the subscription we created in /subscription
-      const sub = await getStripe.arguments.subscriptions.retrieve(invoice.subscription);
+      const sub = await stripe.subscriptions.retrieve(invoice.subscription);
       const recipientId = sub.metadata?.recipient_id;
       const supporterId = sub.metadata?.supporter_id || null;
 
@@ -110,7 +111,7 @@ export async function POST(req: NextRequest) {
       const invoice: any = event.data.object;
       if (!invoice.subscription) break;
 
-      const sub = await getStripe.arguments.subscriptions.retrieve(invoice.subscription);
+      const sub = await stripe.subscriptions.retrieve(invoice.subscription);
       const recipientId = sub.metadata?.recipient_id;
       const supporterId = sub.metadata?.supporter_id || null;
 

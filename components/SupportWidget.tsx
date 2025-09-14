@@ -39,7 +39,7 @@ export default function SupportWidget({
       const res = await fetch("/api/checkout/session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ recipientUsername: username, supporterId: null }),
+        body: JSON.stringify(payload),
       });
 
       const ct = res.headers.get("content-type") || "";
@@ -52,7 +52,7 @@ export default function SupportWidget({
       }
 
       if (!res.ok || !data?.url) {
-        throw new Error(data?.error || "Failed to start subscription");
+        throw new Error(data?.error || "Failed to start checkout");
       }
 
       window.location.href = data.url;

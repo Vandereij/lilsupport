@@ -22,8 +22,8 @@ export async function POST(req: NextRequest) {
   if (!profile?.stripe_account_id) {
     return NextResponse.json({ onboarded: false, reason: "no_account" });
   }
-
-  const acct = await getStripe.arguments.retrieve(profile.stripe_account_id);
+  const stripe = getStripe();
+  const acct = await stripe.accounts.retrieve(profile.stripe_account_id);
 
   const transfersActive = acct.capabilities?.transfers === "active";
   const currentlyDue = acct.requirements?.currently_due ?? [];

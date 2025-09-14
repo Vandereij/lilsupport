@@ -24,8 +24,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "No connected account" }, { status: 400 });
   }
 
+  const stripe = getStripe();
+
   // ✅ No options object here; just the account id
-  const login = await getStripe.arguments.accounts.createLoginLink(profile.stripe_account_id);
+  const login = await stripe.accounts.createLoginLink(profile.stripe_account_id);
 
   return NextResponse.json({ url: login.url });
 }
