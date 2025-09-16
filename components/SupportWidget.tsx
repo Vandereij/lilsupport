@@ -16,6 +16,8 @@ export default function SupportWidget({
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
+  const maxChars = 140;
+
   const startCheckout = async () => {
     setLoading(true);
     setErr(null);
@@ -94,13 +96,18 @@ export default function SupportWidget({
         />
       </div>
 
-      <textarea
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        maxLength={140}
-        placeholder="Say thanks (optional)"
-        className="w-full rounded-xl border px-3 py-2"
-      />
+      <div>
+        <textarea
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          maxLength={maxChars}
+          placeholder="Say thanks (optional)"
+          className="w-full rounded-xl border px-3 py-2"
+        />
+        <div className="text-right text-xs text-neutral-500 mt-1">
+          {message.length}/{maxChars}
+        </div>
+      </div>
 
       <button
         onClick={startCheckout}
