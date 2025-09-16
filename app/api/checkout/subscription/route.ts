@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
           recipient_id: recipient.id,
           recipient_username: recipient.username,
           supporter_id: cleanSupporterId ?? "",
-
+          message: msg,
         },
       },
       metadata: {
@@ -79,6 +79,7 @@ export async function POST(req: NextRequest) {
         recipient_id: recipient.id,
         recipient_username: recipient.username,
         supporter_id: cleanSupporterId ?? "",
+        message: msg,
       },
       ...(taxEnabled ? { automatic_tax: { enabled: true } } : {}),
     });
