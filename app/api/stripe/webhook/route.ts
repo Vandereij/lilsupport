@@ -59,8 +59,8 @@ export async function POST(req: NextRequest) {
 
           const pi: any = piId
             ? await stripe.paymentIntents.retrieve(piId, {
-                expand: ["latest_charge.balance_transaction"],
-              })
+              expand: ["latest_charge.balance_transaction"],
+            })
             : null;
 
           // Prefer latest_charge (charges list is not used)
@@ -125,9 +125,14 @@ export async function POST(req: NextRequest) {
 
           const invPi: any = invPiId
             ? await stripe.paymentIntents.retrieve(invPiId, {
-                expand: ["latest_charge.balance_transaction"],
-              })
+              expand: ["latest_charge.balance_transaction"],
+            })
             : null;
+
+          if (!invoice || !invPiId) {
+            console.log("[subs] skip initial insert; no invoice yet", { session: s.id, subId });
+            break; // invoice.paid will insert later
+          }
 
           const currency = (invoice?.currency || "usd").toLowerCase();
           const amount_minor = num(invoice?.amount_paid ?? invoice?.amount_due);
@@ -138,9 +143,9 @@ export async function POST(req: NextRequest) {
           // Tax from total_tax_amounts (fallback amount_tax)
           const tax_minor = Array.isArray(invoice?.total_tax_amounts)
             ? invoice.total_tax_amounts.reduce(
-                (sum: number, t: any) => sum + num(t.amount),
-                0
-              )
+              (sum: number, t: any) => sum + num(t.amount),
+              0
+            )
             : num(invoice?.amount_tax ?? 0);
 
           await insertPayment({
@@ -192,8 +197,8 @@ export async function POST(req: NextRequest) {
 
         const invPi: any = invPiId
           ? await getStripe().paymentIntents.retrieve(invPiId, {
-              expand: ["latest_charge.balance_transaction"],
-            })
+            expand: ["latest_charge.balance_transaction"],
+          })
           : null;
 
         const amount_minor = num(inv.amount_paid ?? inv.amount_due);
@@ -202,9 +207,9 @@ export async function POST(req: NextRequest) {
         // Tax from total_tax_amounts (fallback amount_tax)
         const tax_minor = Array.isArray(inv.total_tax_amounts)
           ? inv.total_tax_amounts.reduce(
-              (sum: number, t: any) => sum + num(t.amount),
-              0
-            )
+            (sum: number, t: any) => sum + num(t.amount),
+            0
+          )
           : num(inv.amount_tax ?? 0);
 
         await insertPayment({
