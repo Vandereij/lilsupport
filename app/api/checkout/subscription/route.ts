@@ -17,8 +17,8 @@ export async function POST(req: NextRequest) {
       throw new Error("Missing STRIPE_PRICE_ID_MONTHLY env");
     }
 
-    const { supporterId, recipientUsername } =
-      (await req.json()) as { supporterId?: string | null; recipientUsername?: string };
+    const { supporterId, recipientUsername, message } =
+      (await req.json()) as { supporterId?: string | null; recipientUsername?: string; message?: string };
 
     if (!recipientUsername) {
       return NextResponse.json({ error: "Missing recipientUsername" }, { status: 400 });
@@ -53,8 +53,9 @@ export async function POST(req: NextRequest) {
     const cleanSupporterId =
       supporterId && supporterId !== recipient.id ? supporterId : null;
 
-      
     const taxEnabled = process.env.STRIPE_TAX_ENABLED === "true";
+
+    const msg = message ? String(message).slice(0, 140) : "";
 
     const stripe = getStripe();
     const session = await stripe.checkout.sessions.create({
@@ -70,6 +71,7 @@ export async function POST(req: NextRequest) {
           recipient_id: recipient.id,
           recipient_username: recipient.username,
           supporter_id: cleanSupporterId ?? "",
+
         },
       },
       metadata: {

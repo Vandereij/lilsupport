@@ -102,6 +102,8 @@ export async function POST(req: NextRequest) {
 
         const taxEnabled = process.env.STRIPE_TAX_ENABLED === "true";
 
+        const msg = message ? String(message).slice(0, 140) : "";
+
         const stripe = getStripe();
         const session = await stripe.checkout.sessions.create({
             mode: "payment",
@@ -121,6 +123,7 @@ export async function POST(req: NextRequest) {
                 supporter_id: cleanSupporterId ?? "",
                 recipient_id: recipient.id,
                 recipient_username: recipient.username,
+                message: msg,
             },
 
         });
